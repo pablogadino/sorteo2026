@@ -72,7 +72,14 @@ const enviar = async () => {
     }
 
     enviado.value = true
-  } catch {
+  } catch (err) {
+    if (err instanceof TypeError && err.message === 'Failed to fetch') {
+      console.log('Error de red: no se pudo alcanzar el servidor (posible CORS, DNS, o servidor caído).', err)
+    } else if (err instanceof Error) {
+      console.log('Error inesperado al enviar formulario:', err.message, err)
+    } else {
+      console.log('Error desconocido al enviar formulario:', err)
+    }
     errorServidor.value = 'Error de conexión. Verifique su internet e intente nuevamente.'
   } finally {
     enviando.value = false
