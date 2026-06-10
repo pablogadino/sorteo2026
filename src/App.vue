@@ -1,55 +1,52 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive } from "vue";
 
 const campos = reactive({
-  nombre: '',
-  apellido: '',
-  celular: '',
-  email: '',
-  cedula: '',
+  nombre: "",
+  apellido: "",
+  celular: "",
+  email: "",
+  cedula: "",
   revistas: [] as string[],
-})
+});
 
-const errores = reactive<Record<string, string>>({})
-const enviado = ref(false)
-const enviando = ref(false)
+const errores = reactive<Record<string, string>>({});
+const enviado = ref(false);
+const enviando = ref(false);
 
-const opcionesRevistas = [
-  'Primaria',
-  'Niño en Obra',
-  'Educación del Pueblo',
-]
+const opcionesRevistas = ["Primaria", "Niño en Obra", "Educación del Pueblo"];
 
-const errorServidor = ref('')
+const errorServidor = ref("");
 
 const validar = (): boolean => {
-  Object.keys(errores).forEach((k) => delete errores[k])
-  errorServidor.value = ''
+  Object.keys(errores).forEach((k) => delete errores[k]);
+  errorServidor.value = "";
 
-  if (!campos.nombre.trim()) errores.nombre = 'Ingrese su nombre'
-  if (!campos.apellido.trim()) errores.apellido = 'Ingrese su apellido'
-  if (!campos.celular.trim()) errores.celular = 'Ingrese su celular'
-  else if (!/^\d{7,15}$/.test(campos.celular.replace(/\D/g, '')))
-    errores.celular = 'Ingrese un número válido'
-  if (!campos.email.trim()) errores.email = 'Ingrese su email'
+  if (!campos.nombre.trim()) errores.nombre = "Ingrese su nombre";
+  if (!campos.apellido.trim()) errores.apellido = "Ingrese su apellido";
+  if (!campos.celular.trim()) errores.celular = "Ingrese su celular";
+  else if (!/^\d{7,15}$/.test(campos.celular.replace(/\D/g, "")))
+    errores.celular = "Ingrese un número válido";
+  if (!campos.email.trim()) errores.email = "Ingrese su email";
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(campos.email))
-    errores.email = 'Ingrese un email válido'
-  if (!campos.cedula.trim()) errores.cedula = 'Ingrese su cédula'
-  else if (!/^\d{8}$/.test(campos.cedula.replace(/\D/g, '')))
-    errores.cedula = 'La cédula debe tener 8 dígitos'
-  if (campos.revistas.length === 0) errores.revistas = 'Seleccione al menos una revista'
+    errores.email = "Ingrese un email válido";
+  if (!campos.cedula.trim()) errores.cedula = "Ingrese su cédula";
+  else if (!/^\d{8}$/.test(campos.cedula.replace(/\D/g, "")))
+    errores.cedula = "La cédula debe tener 8 dígitos";
+  if (campos.revistas.length === 0)
+    errores.revistas = "Seleccione al menos una revista";
 
-  return Object.keys(errores).length === 0
-}
+  return Object.keys(errores).length === 0;
+};
 
 const enviar = async () => {
-  if (!validar()) return
-  enviando.value = true
+  if (!validar()) return;
+  enviando.value = true;
 
   try {
-    const response = await fetch('https://aula.com.uy/larete/api/sorteo/2026', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch("https://aula.com.uy/larete/api/sorteo/2026", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         nombre: campos.nombre.trim(),
         apellido: campos.apellido.trim(),
@@ -58,44 +55,56 @@ const enviar = async () => {
         cedula: campos.cedula.trim(),
         revistas: campos.revistas,
       }),
-    })
+    });
 
     if (!response.ok) {
-      const data = await response.json()
+      const data = await response.json();
       if (data.errors) {
         for (const [campo, mensajes] of Object.entries(data.errors)) {
-          errores[campo] = Array.isArray(mensajes) ? (mensajes as string[])[0] : String(mensajes)
+          errores[campo] = Array.isArray(mensajes)
+            ? (mensajes as string[])[0]
+            : String(mensajes);
         }
       }
-      errorServidor.value = data.message || 'Error al enviar el formulario.'
-      return
+      errorServidor.value = data.message || "Error al enviar el formulario.";
+      return;
     }
 
-    enviado.value = true
+    enviado.value = true;
   } catch (err) {
-    if (err instanceof TypeError && err.message === 'Failed to fetch') {
-      console.log('Error de red: no se pudo alcanzar el servidor (posible CORS, DNS, o servidor caído).', err)
+    if (err instanceof TypeError && err.message === "Failed to fetch") {
+      console.log(
+        "Error de red: no se pudo alcanzar el servidor (posible CORS, DNS, o servidor caído).",
+        err,
+      );
     } else if (err instanceof Error) {
-      console.log('Error inesperado al enviar formulario:', err.message, err)
+      console.log("Error inesperado al enviar formulario:", err.message, err);
     } else {
-      console.log('Error desconocido al enviar formulario:', err)
+      console.log("Error desconocido al enviar formulario:", err);
     }
-    errorServidor.value = 'Error de conexión. Verifique su internet e intente nuevamente.'
+    errorServidor.value =
+      "Error de conexión. Verifique su internet e intente nuevamente.";
   } finally {
-    enviando.value = false
+    enviando.value = false;
   }
-}
+};
 </script>
 
 <template>
   <div class="contenedor">
-    <div class="alerta-prueba">SITIO DE PRUEBAS — NO OFICIAL</div>
+    <div class="alerta-prueba">AULA - REVISTA DE LA EDUCACIÓN DEL PUEBLO</div>
 
     <header class="heroe">
       <div class="emoji">🎁</div>
       <h1>Sorteo Primaria-Niño en Obra 2026</h1>
-      <p class="exclusividad">Sorteo exclusivo para personas con suscripción vigente de las revistas de Aula.</p>
-      <p class="disclaimer">El sistema no tomará en cuenta formularios llenados por personas sin suscripción vigente (por seguridad de la base de datos no te informa en el momento si no tienes suscripciones).</p>
+      <p class="exclusividad">
+        Sorteo exclusivo para personas con suscripción vigente de las revistas
+        de Aula.
+      </p>
+      <p class="disclaimer">
+        El sistema no tomará en cuenta formularios llenados por personas sin
+        suscripción vigente.
+      </p>
     </header>
 
     <main class="formulario-contenedor" v-if="!enviado">
@@ -110,18 +119,24 @@ const enviar = async () => {
             type="text"
             :class="{ error: errores.nombre }"
           />
-          <span class="msg-error" v-if="errores.nombre">{{ errores.nombre }}</span>
+          <span class="msg-error" v-if="errores.nombre">{{
+            errores.nombre
+          }}</span>
         </div>
 
         <div class="grupo-campo">
-          <label for="apellido">Apellido <span class="requerido">*</span></label>
+          <label for="apellido"
+            >Apellido <span class="requerido">*</span></label
+          >
           <input
             id="apellido"
             v-model="campos.apellido"
             type="text"
             :class="{ error: errores.apellido }"
           />
-          <span class="msg-error" v-if="errores.apellido">{{ errores.apellido }}</span>
+          <span class="msg-error" v-if="errores.apellido">{{
+            errores.apellido
+          }}</span>
         </div>
 
         <div class="grupo-campo">
@@ -132,7 +147,9 @@ const enviar = async () => {
             type="tel"
             :class="{ error: errores.celular }"
           />
-          <span class="msg-error" v-if="errores.celular">{{ errores.celular }}</span>
+          <span class="msg-error" v-if="errores.celular">{{
+            errores.celular
+          }}</span>
         </div>
 
         <div class="grupo-campo">
@@ -143,7 +160,9 @@ const enviar = async () => {
             type="email"
             :class="{ error: errores.email }"
           />
-          <span class="msg-error" v-if="errores.email">{{ errores.email }}</span>
+          <span class="msg-error" v-if="errores.email">{{
+            errores.email
+          }}</span>
         </div>
 
         <div class="grupo-campo">
@@ -156,18 +175,26 @@ const enviar = async () => {
             maxlength="8"
             :class="{ error: errores.cedula }"
           />
-          <span class="msg-error" v-if="errores.cedula">{{ errores.cedula }}</span>
+          <span class="msg-error" v-if="errores.cedula">{{
+            errores.cedula
+          }}</span>
         </div>
 
         <div class="grupo-campo grupo-checkboxes">
           <label>Revistas que recibe <span class="requerido">*</span></label>
           <div class="checkboxes" :class="{ error: errores.revistas }">
-            <label v-for="r in opcionesRevistas" :key="r" class="checkbox-opcion">
+            <label
+              v-for="r in opcionesRevistas"
+              :key="r"
+              class="checkbox-opcion"
+            >
               <input type="checkbox" :value="r" v-model="campos.revistas" />
               <span>{{ r }}</span>
             </label>
           </div>
-          <span class="msg-error" v-if="errores.revistas">{{ errores.revistas }}</span>
+          <span class="msg-error" v-if="errores.revistas">{{
+            errores.revistas
+          }}</span>
         </div>
       </div>
 
@@ -188,9 +215,13 @@ const enviar = async () => {
           >, su participación ha sido registrada.
         </p>
         <p class="modal-texto">
-          El sistema corroborará que el formulario corresponde a personas con suscripción vigente a las revistas de Aula. Si no tienes suscripción vigente, en los próximos días te enviará la notificación de que no es válido al correo o celular que anotaste aquí. El sorteo es el día 31 de julio entre los formularios recibidos que corresponden a suscripciones vigentes. Gracias por participar.
+          El sistema corroborará que el formulario corresponde a personas con
+          suscripción vigente a las revistas de Aula. Si no tienes suscripción
+          vigente, en los próximos días te enviará la notificación de que no es
+          válido al correo. El sorteo es el día 31 de julio entre los
+          formularios recibidos que corresponden a suscripciones vigentes.
+          Gracias por participar.
         </p>
-        <p class="aviso-prueba">Este es un sitio de pruebas. No se almacenaron datos reales.</p>
         <button class="btn-cerrar" @click="enviado = false">Cerrar</button>
       </div>
     </div>
@@ -207,7 +238,11 @@ const enviar = async () => {
 }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
   background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
   color: #e0e0e0;
   min-height: 100vh;
@@ -316,7 +351,9 @@ h1 {
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(255, 255, 255, 0.07);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .checkboxes.error {
@@ -333,7 +370,7 @@ h1 {
   color: #ccc;
 }
 
-.checkbox-opcion input[type='checkbox'] {
+.checkbox-opcion input[type="checkbox"] {
   width: 16px;
   height: 16px;
   accent-color: #f7971e;
@@ -360,7 +397,9 @@ select {
   color: #e0e0e0;
   font-size: 0.95rem;
   font-family: inherit;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   outline: none;
 }
 
@@ -410,7 +449,9 @@ select option {
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
 }
 
 .error-servidor {
@@ -510,7 +551,9 @@ select option {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
 }
 
 .btn-cerrar:hover {
