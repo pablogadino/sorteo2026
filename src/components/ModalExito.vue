@@ -22,9 +22,9 @@ defineEmits<{
         El sistema corroborará que el formulario corresponde a personas con
         suscripción vigente a las revistas de Aula. Si no tienes suscripción
         vigente, en los próximos días te enviará la notificación de que no es
-        válido al correo. El sorteo es el día 31 de julio entre los formularios
-        recibidos que corresponden a suscripciones vigentes. Gracias por
-        participar.
+        válido al correo que nos indicaste. El sorteo es el día 31 de julio
+        entre los formularios recibidos que corresponden a suscripciones
+        vigentes. Gracias por participar.
       </p>
       <button class="btn-cerrar" @click="$emit('cerrar')">Cerrar</button>
     </div>
