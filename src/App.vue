@@ -24,6 +24,10 @@ const opcionesRevistas = ["Primaria", "Niño en Obra", "Educación del Pueblo"];
 
 const errorServidor = ref("");
 
+const redirigirAula = () => {
+  window.location.href = "https://aula.com.uy";
+};
+
 const validar = (): boolean => {
   Object.keys(errores).forEach((k) => delete errores[k]);
   errorServidor.value = "";
@@ -159,7 +163,7 @@ const enviar = async () => {
       v-if="enviado"
       :nombre="campos.nombre"
       :apellido="campos.apellido"
-      @cerrar="window.location.href = 'https://aula.com.uy'"
+      @cerrar="redirigirAula"
     />
 
     <ModalBases
