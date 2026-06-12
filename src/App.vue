@@ -62,7 +62,7 @@ const enviar = async () => {
         apellido: campos.apellido.trim(),
         celular: campos.celular.trim(),
         email: campos.email.trim(),
-        cedula: campos.cedula.trim(),
+        cedula: campos.cedula.replace(/[\s.-]/g, ""),
         revistas: campos.revistas,
       }),
     });
@@ -137,8 +137,6 @@ const enviar = async () => {
         <CampoFormulario
           id="cedula"
           label="Cédula"
-          inputmode="numeric"
-          maxlength="8"
           v-model="campos.cedula"
           :error="errores.cedula"
         />
