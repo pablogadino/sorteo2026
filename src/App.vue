@@ -4,6 +4,7 @@ import AppHeader from "./components/AppHeader.vue";
 import CampoFormulario from "./components/CampoFormulario.vue";
 import CheckboxRevistas from "./components/CheckboxRevistas.vue";
 import ModalExito from "./components/ModalExito.vue";
+import ModalBases from "./components/ModalBases.vue";
 
 const campos = reactive({
   nombre: "",
@@ -17,6 +18,7 @@ const campos = reactive({
 const errores = reactive<Record<string, string>>({});
 const enviado = ref(false);
 const enviando = ref(false);
+const mostrarBases = ref(false);
 
 const opcionesRevistas = ["Primaria", "Niño en Obra", "Educación del Pueblo"];
 
@@ -149,13 +151,20 @@ const enviar = async () => {
         <span v-if="enviando" class="spinner"></span>
         <span v-else>Participar en el Sorteo</span>
       </button>
+
+      <button class="btn-bases" @click="mostrarBases = true">Bases y condiciones</button>
     </main>
 
     <ModalExito
       v-if="enviado"
       :nombre="campos.nombre"
       :apellido="campos.apellido"
-      @cerrar="enviado = false"
+      @cerrar="window.location.href = 'https://aula.com.uy'"
+    />
+
+    <ModalBases
+      v-if="mostrarBases"
+      @cerrar="mostrarBases = false"
     />
   </div>
 </template>
@@ -227,6 +236,25 @@ const enviar = async () => {
 .btn-enviar:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.btn-bases {
+  display: block;
+  margin: 0.8rem auto 0 auto;
+  padding: 0;
+  font-size: 0.8rem;
+  font-family: inherit;
+  color: #999;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s;
+}
+
+.btn-bases:hover {
+  color: #f7971e;
 }
 
 .spinner {
